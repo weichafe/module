@@ -1,0 +1,199 @@
+syntax = "proto3";
+import "routing.proto";
+import "notification.proto";
+import "marketdata.proto";
+
+package messages;
+option java_package = "cl.vc.module.protocolbuff.blotter";
+option java_outer_classname = "BlotterMessage";
+
+enum TickAction {
+  UNKNOWN_TICK_ACTION = 0;
+  UP = 1;
+  DOWN = 2;
+}
+
+enum StatusPortfolio {
+  NEW_PORTFOLIO = 0;
+  UPDATE_PORTFOLIO = 1;
+  DELETE_PORTFOLIO = 2;
+  SNAPSHOT_PORTFOLIO = 3;
+  ADD_ASSET = 4;
+  REMOVE_ASSET = 5;
+  UPDATE_ASSET = 6;
+  ALL_PORTFOLIO = 7;
+}
+
+enum StatusPreselect {
+  SNAPSHOT_PRESELECT = 0;
+  ADD_PRESELECT = 1;
+  REMOVE_PRESELECT = 2;
+}
+
+message PreselectRequest {
+  Order orders = 1;
+  string username = 2;
+  StatusPreselect statusPreselect = 3;
+
+}
+
+message PreselectResponse {
+  repeated Order orders = 1;
+  string username = 2;
+  StatusPreselect statusPreselect = 3;
+}
+
+message PortfolioRequest {
+  StatusPortfolio statusPortfolio = 1;
+  string marketdataControllerId = 2;
+  string namePortfolio = 4;
+  string username = 5;
+  Asset asset = 6;
+}
+
+message PortfolioResponse {
+  repeated Portfolio postfolio = 1;
+  StatusPortfolio statusPortfolio = 2;
+  Asset asset = 3;
+  string username = 4;
+  string namePortfolio = 5;
+  string marketdataControllerId = 6;
+}
+
+
+message Portfolio {
+  string id = 1;
+  string idSec = 2;
+  string namePortfolio = 3;
+  string username = 4;
+  repeated Asset asset = 5;
+}
+
+message Asset {
+  string id = 1;
+  string symbol = 2;
+  Statistic statistic = 3;
+  SecurityExchangeMarketData securityexchange = 4;
+}
+
+message TypeOrd {
+  double sent = 1;
+  double working = 2;
+  double trade = 3;
+  double short = 4;
+  double px = 5;
+  double cashBought = 6;
+}
+
+message SubscribeTradeMonitor {
+  string username = 1;
+  OrderStatus orderStatus = 2;
+  SecurityExchangeRouting securityExchange = 3;
+  string symbol = 4;
+  Side side = 5;
+  string prefix = 6;
+  repeated string account = 7;
+}
+
+
+message Position {
+  string id = 1;
+  string account = 2;
+  string symbol = 3;
+  SecurityExchangeRouting securityexchange = 4;
+  double auxBuy = 5;
+  double sentBuy = 6;
+  double workingBuy = 7;
+  double tradeBuy = 8;
+  double pxBuy = 9;
+  double cashBoughtBuy = 10;
+  double auxBSell = 11;
+  double sentSell = 12;
+  double workingSell = 13;
+  double tradeSell = 15;
+  double tradeSellShort = 16;
+  double pxSell = 17;
+  double cashSell = 18;
+  double qtyNet = 19;
+  double pxNet = 20;
+  double amountNet = 21;
+}
+
+message PositionsTotals {
+  string total = 1;
+  double buy = 2;
+  double sell = 3;
+  double net = 4;
+}
+
+message TradesTotals {
+  double tlTotal = 1;
+  double tlTotalBuy = 2;
+  double tcTotalBuy = 3;
+  double tlTotalSell = 4;
+  double tcTotalSell = 5;
+  double tlTotalAmount = 6;
+  double tcTotalAmount = 7;
+}
+
+
+message SnapshotOrders {
+  string id = 1;
+  repeated Order orders = 2;
+}
+
+message SnapshotTrades {
+  string id = 2;
+  repeated Order trades = 1;
+}
+
+message SnapshotPositions {
+  string id = 2;
+  repeated Position positions = 3;
+}
+
+
+message SnapshotRequest {
+  string producer = 1;
+  string operator = 2;
+}
+
+
+message OrderTickRequest {
+  Order order = 1;
+  TickAction action = 2;
+  uint32 ticks = 3;
+}
+
+message StrategyColor {
+	string id = 1;
+	string name = 2;
+	string prefix = 3;
+	string buyColor = 4;
+	string sellColor = 5;
+	string updateBy = 6;
+	string lastUpdate = 7;
+}
+
+message Strategy {
+	string id = 1;
+	string name = 2;
+	string prefix = 3;
+	string buyColor = 4;
+	string sellColor = 5;
+	string updateBy = 6;
+	string lastUpdate = 7;
+}
+
+
+message UpdateStrategy {
+Strategy strategy = 1;
+}
+
+message DeleteStrategy {
+	Strategy strategy = 1;
+}
+
+message AddStrategyLVOMS {
+  Strategy strategy = 1;
+}

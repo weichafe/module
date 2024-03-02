@@ -1,0 +1,28 @@
+syntax = "proto3";
+import "notification.proto";
+
+package messages;
+option java_package = "cl.vc.module.protocolbuff.session";
+option java_outer_classname = "SessionsMessage";
+
+message Pong {
+	string id = 1;
+}
+
+message Ping {
+	string id = 1;
+}
+
+message Disconnect {
+	string id = 1;
+	string destination = 2;
+	string text = 3;
+	Component component = 4;
+}
+
+message Connect {
+	string id = 1;
+	string destination = 2;
+	string text = 3;
+	Component component = 4;
+}

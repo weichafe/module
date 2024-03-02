@@ -1,0 +1,42 @@
+syntax = "proto3";
+import "routing.proto";
+
+package messages;
+
+option java_package = "cl.vc.module.protocolbuff.basket";
+option java_outer_classname = "BasketMessage";
+import "google/protobuf/timestamp.proto";
+
+
+message Basket {
+  repeated Order orders = 1;
+  string basketID = 2;
+  double nBuy = 3;
+  double nSell = 4;
+  double totalAmount = 5;
+  double totalAmountDone = 6;
+  double totalAmountLeft = 12;
+  double amountPercDone = 7;
+  double amountPercLeft = 8;
+  double totalQty = 9;
+  double totalQtyDone = 10;
+  double totalQtyLeft = 11;
+}
+
+message CancelBasket {
+  string id = 1;
+}
+
+message SnapshotBasket {
+  string username = 1;
+  Basket basket = 2;
+}
+
+message DeleteBasketOrder {
+  Order order = 1;
+}
+
+message UpdatedBasket {
+  Basket basket = 1;
+}
+

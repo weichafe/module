@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package messages;
+import "routing.proto";
+
+import "notification.proto";
+import "marketdata.proto";
+import "generalstrategy.proto";
+
+option java_package = "cl.vc.algos.etf.proto";
+option java_outer_classname = "ETFStrategyProtos";
+
+
+enum ConfigType {
+  NONE_CONGIF = 0;
+  PREMIUM = 1;
+  DISCOUNT = 2;
+}
+
+enum IndicatorType {
+  NONE_INDICATOR = 0;
+  NAV = 2;
+  EXEC_TARGET = 3;
+  TOTAL_EXEC_TARGET = 4;
+}
+
+
+message ETFSymbolList {
+    repeated ETFSymbol eTFSymbol = 1;
+}
+
+message ETFSymbol {
+  string symbolId = 1;
+  string symbolName = 2;
+  Currency currency = 3;
+  double qty = 4;
+  double spread = 5;
+  double limit = 6;
+  double lastPx = 7;
+  double cash = 8;
+  double variation = 9;
+  bool enabled = 10;
+  ExStrategy strategy = 11;
+  ExecBroker localExecBroker = 12;
+  string localAccount = 13;
+  string description = 14;
+  StatusStrategy statusStrategy = 15;
+  SecurityExchangeMarketData securityExchangeMarketData = 16;
+  SecurityExchangeRouting routingExchange = 17;
+  double bidPx = 18;
+  double askPx = 19;
+}
+
+message ETFConfig {
+
+  double minUnit = 1;
+  double cash = 2;
+  double qtyPremium = 3;
+  double costPremium = 4;
+  double limitPremium = 5;
+  double spreadPremium = 6;
+  double execTargetPremium = 7;
+  ExStrategy strategyPremium = 8;
+  double qtyDiscount = 9;
+  double costDiscount = 10;
+  double limitDiscount = 11;
+  double spreadDiscount = 12;
+  double execTargetDiscount = 13;
+  ExStrategy strategyDiscount = 14;
+  double etfVar = 15;
+
+  double amountSymbols = 17;
+  double qtySymbols = 18;
+
+  string etfSymbol = 19;
+  string fxSymbol = 20;
+
+  SecurityExchangeMarketData etfSecurityExchangeMarketData = 21;
+  SecurityExchangeRouting etfRoutingExchange = 22;
+
+  double navBid = 23;
+  double navAsk = 24;
+  double navLast = 25;
+
+  double etfBid = 26;
+  double etfAsk = 27;
+  double etfLast = 28;
+
+  SecurityExchangeMarketData fxExchangeMarketData = 29;
+
+  double fxBid = 31;
+  double fxAsk = 32;
+  double fxLast = 33;
+
+  double fxVar = 34;
+  double fxAmount = 35;
+
+  bool subscribe = 36;
+  bool startPremium = 37;
+  bool startDiscount = 38;
+
+}
