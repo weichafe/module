@@ -1,10 +1,5 @@
 package cl.vc.module.protocolbuff.tcp;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.core.FileAppender;
 import cl.vc.module.protocolbuff.interfaces.NettyInterface;
 import cl.vc.module.protocolbuff.notification.NotificationMessage;
 import cl.vc.module.protocolbuff.session.SessionsMessage;
@@ -18,22 +13,14 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactory;
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import static cl.vc.module.protocolbuff.tcp.ProtoMapping.packMessage;
 import static cl.vc.module.protocolbuff.tcp.ProtoMapping.unpackMessage;
 
-@Slf4j
 public class NettyObjectClient extends Thread {
     private final String hostname;
     private final int port;
     private EventLoopGroup group;
     private Channel channel;
-    @Getter
     private boolean connected = false;
     private boolean stopped = false;
     private ByteBuf pong = packMessage(SessionsMessage.Pong.newBuilder().build());
@@ -41,7 +28,7 @@ public class NettyObjectClient extends Thread {
     private NotificationMessage.Component component;
     private NettyInterface nettyInterface;
 
-    public NettyObjectClient(String host, NettyInterface nettyInterface, String path, String detination, NotificationMessage.Component  component) {
+    public NettyObjectClient(String host, NettyInterface nettyInterface, String detination, NotificationMessage.Component  component) {
 
         String[] parts = host.split(":", 2);
         assert parts.length == 2;
@@ -50,26 +37,6 @@ public class NettyObjectClient extends Thread {
         this.nettyInterface = nettyInterface;
         this.detination = detination;
         this.component = component;
-
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-        encoder.setContext(context);
-        encoder.setPattern("[%date{ISO8601}] %msg%n");
-        encoder.start();
-
-        FileAppender appender = new FileAppender();
-        appender.setContext(context);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        String currentDate = dateFormat.format(new Date());
-        appender.setFile(path + "_" + currentDate + ".log");
-        appender.setAppend(true);
-        appender.setEncoder(encoder);
-        appender.start();
-
-        Logger fileLog = context.getLogger(path.replace(File.separator, "."));
-        fileLog.setAdditive(false);
-        fileLog.setLevel(Level.ALL);
-        fileLog.addAppender(appender);
     }
 
     public void run() {
@@ -97,7 +64,6 @@ public class NettyObjectClient extends Thread {
                 channel.closeFuture().sync();
 
             } catch (Exception e) {
-                log.error("Netty Client Exception ({}:{}): {}", hostname, port, e.getMessage());
                 SessionsMessage.Disconnect disconnect = SessionsMessage.Disconnect.newBuilder().setId(e.getMessage())
                         .setDestination(detination)
                         .setComponent(component)
@@ -112,7 +78,6 @@ public class NettyObjectClient extends Thread {
                 try {
                     Thread.sleep(5000);
                 } catch (Exception e) {
-                    log.error(e.getMessage(), e);
                 }
             }
         }
@@ -125,7 +90,6 @@ public class NettyObjectClient extends Thread {
             group.shutdownGracefully();
 
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
         }
     }
 
@@ -143,7 +107,6 @@ public class NettyObjectClient extends Thread {
             }
 
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
         }
     }
 
@@ -160,7 +123,6 @@ public class NettyObjectClient extends Thread {
             nettyInterface.send(new TransportingObjects(ctx, connect));
 
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
         }
     }
 
@@ -176,25 +138,21 @@ public class NettyObjectClient extends Thread {
             }
 
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
         }
     }
 
     public void sendMessage(Message message) {
         try {
             if(message == null) {
-                log.error("message null. {}", message);
                 return;
             }
             if (connected) {
                 ByteBuf orderss = packMessage(message);
                 channel.writeAndFlush(orderss);
             } else {
-                log.error("Cannot send Message. Connection is closed. {}", message);
             }
 
         } catch (Exception e) {
-            log.error("Cannot send Message...", e);
         }
     }
 
@@ -232,7 +190,6 @@ public class NettyObjectClient extends Thread {
 
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-            log.error("Netty Client (ID: {}): {}", ctx.channel().id(), cause.getMessage());
             ctx.close();
         }
     }
