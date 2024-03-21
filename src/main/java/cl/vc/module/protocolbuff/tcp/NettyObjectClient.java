@@ -102,7 +102,7 @@ public class NettyObjectClient extends Thread {
                         .setDestination(detination)
                         .setComponent(component)
                         .setText("disconnected " + e.getMessage()).build();
-                nettyInterface.send(disconnect);
+                nettyInterface.send(new TransportingObjects(null, disconnect));
 
             } finally {
                 group.shutdownGracefully();
@@ -133,13 +133,11 @@ public class NettyObjectClient extends Thread {
         try {
 
             if (connected) {
-
                 SessionsMessage.Disconnect disconnect = SessionsMessage.Disconnect.newBuilder()
                         .setId(ctx.channel().id().toString())
                         .setDestination(detination)
                         .setComponent(component)
                         .setText("disconnected").build();
-
                 nettyInterface.send(new TransportingObjects(ctx, disconnect));
                 connected = false;
             }
@@ -159,7 +157,6 @@ public class NettyObjectClient extends Thread {
                     .setComponent(component)
                     .setText("connected")
                     .build();
-
             nettyInterface.send(new TransportingObjects(ctx, connect));
 
         } catch (Exception e) {
@@ -185,17 +182,13 @@ public class NettyObjectClient extends Thread {
 
     public void sendMessage(Message message) {
         try {
-
             if(message == null) {
                 log.error("message null. {}", message);
                 return;
             }
-
             if (connected) {
                 ByteBuf orderss = packMessage(message);
                 channel.writeAndFlush(orderss);
-                nettyInterface.send(message);
-
             } else {
                 log.error("Cannot send Message. Connection is closed. {}", message);
             }
